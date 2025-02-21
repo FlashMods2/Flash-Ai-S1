@@ -1,24 +1,48 @@
-const express = require("express");
-const fs = require("fs");
+const express = require('express');
+const cors = require('cors'); // CORS module import karo
+const fs = require('fs');
+
 const app = express();
-app.use(express.json());
 
-let keys = JSON.parse(fs.readFileSync("data.json"));
+app.use(cors()); // CORS enable karo
+app.use(express.json()); // JSON data ke liye middleware
 
-app.post("/verify-key", (req, res) => {
-    let { key, deviceId } = req.body;
-    let user = keys.find(k => k.key === key);
+// Data file
+const DATA_FILE = 'data.json';
 
-    if (user) {
-        if (user.deviceId && user.deviceId !== deviceId) {
-            return res.json({ success: false, message: "Key already used on another device!" });
-        }
-        user.deviceId = deviceId;
-        fs.writeFileSync("data.json", JSON.stringify(keys, null, 2));
-        res.json({ success: true });
-    } else {
-        res.json({ success: false, message: "Invalid Key!" });
+// Read JSON file function
+function readData() {
+    return JSON.parse(fs.readFileSync(DATA_FILE, 'utf8'));
+}
+
+// Write JSON file function
+function writeData(data) {
+    fs.writeFileSync(DATA_FILE, JSON.stringify(data, null, 2), 'utf8');
+}
+
+// Verify Key API
+app.post('/verify-key', (req, res) => {
+    const { key, deviceId } = req.body;
+    const data = readData();
+    
+    if (data.keys.includes(key)) {
+        return res.json({ success: true, message: "Login Successful!" });
     }
+    return res.status(401).json({ success: false, message: "Invalid Key!" });
 });
 
-app.listen(3000, () => console.log("Server running on port 3000"));
+// Add Key API
+app.post('/add-key', (req, res) => {
+    const { key } = req.body;
+    const data = readData();
+
+    if (!data.keys.includes(key)) {
+        data.keys.push(key);
+        writeData(data);
+        return res.json({ message: "Key Added Successfully!" });
+    }
+    return res.status(400).json({ message: "Key Already Exists!" });
+});
+
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
