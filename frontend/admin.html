@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #222; color: white; text-align: center; }
+        .admin-box { width: 300px; padding: 20px; background: rgba(255, 255, 255, 0.1); margin: 50px auto; border-radius: 10px; }
+        input { width: 90%; padding: 10px; margin: 10px 0; border: none; border-radius: 5px; }
+        button { padding: 10px 20px; background: blue; color: white; border: none; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <h1>Admin Panel</h1>
+    <div class="admin-box">
+        <input type="text" id="newKey" placeholder="Enter New Key">
+        <button onclick="addKey()">Add Key</button>
+    </div>
+    <script>
+        function addKey() {
+            let newKey = document.getElementById("newKey").value;
+            fetch("https://flash-ai-backend.onrender.com/add-key", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ key: newKey })
+            })
+            .then(res => res.json())
+            .then(data => alert(data.message));
+        }
+    </script>
+</body>
+</html>
