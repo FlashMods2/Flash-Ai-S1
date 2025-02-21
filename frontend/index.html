@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🚀 FLASH AI S1 🚀 - Login</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: black; color: white; text-align: center; }
+        .login-box { width: 300px; padding: 20px; background: rgba(255, 255, 255, 0.1); margin: 100px auto; border-radius: 10px; }
+        input { width: 90%; padding: 10px; margin: 10px 0; border: none; border-radius: 5px; }
+        button { padding: 10px 20px; background: red; color: white; border: none; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <h1>🚀 FLASH AI S1 🚀</h1>
+    <div class="login-box">
+        <input type="text" id="key" placeholder="Enter Key">
+        <button onclick="login()">Login</button>
+    </div>
+    <script>
+        function login() {
+            let key = document.getElementById("key").value;
+            fetch("https://flash-ai-backend.onrender.com/verify-key", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ key: key, deviceId: navigator.userAgent })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    alert("Login Successful!");
+                    window.location.href = "dashboard.html";
+                } else {
+                    alert(data.message);
+                }
+            });
+        }
+    </script>
+</body>
+</html>
